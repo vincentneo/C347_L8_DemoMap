@@ -1,9 +1,14 @@
 package sg.edu.rp.c347.id19007966.demomap;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.PermissionChecker;
 import androidx.fragment.app.FragmentManager;
 
+import android.Manifest;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -12,7 +17,10 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,11 +41,50 @@ public class MainActivity extends AppCompatActivity {
                 map = googleMap;
 
                 LatLng poi_CausewayPoint = new LatLng(1.436065, 103.786263);
-                map.moveCamera(CameraUpdateFactory.newLatLngZoom(poi_CausewayPoint, 15));
+
+                MarkerOptions causewayPoint =
+                        new MarkerOptions()
+                                .position(poi_CausewayPoint)
+                                .title("Causeway Point")
+                                .snippet("Shopping after class")
+                                .icon(BitmapDescriptorFactory
+                                        .defaultMarker(BitmapDescriptorFactory.HUE_RED));
+
+                map.addMarker(causewayPoint);
+
+                LatLng poi_RepublicPoly = new LatLng(1.44224, 103.785733);
+
+                MarkerOptions republicPoly =
+                        new MarkerOptions()
+                                .position(poi_RepublicPoly)
+                                .title("Republic Polytechnic")
+                                .snippet("C347 Android Programming II")
+                                .icon(BitmapDescriptorFactory
+                                        .fromResource(R.drawable.android_small));
+
+                map.addMarker(causewayPoint);
+                map.addMarker(republicPoly);
+
+                map.moveCamera(CameraUpdateFactory.
+                        newLatLngZoom(poi_CausewayPoint, 15));
 
                 UiSettings uiSettings = map.getUiSettings();
                 uiSettings.setCompassEnabled(true);
                 uiSettings.setZoomControlsEnabled(true);
+                uiSettings.setMyLocationButtonEnabled(true);
+
+                int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION);
+
+                if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
+                    map.setMyLocationEnabled(true);
+                }
+                else {
+                    Log.e("GMaps - Permission", "GPS access has not been granted");
+                    String[] fineLoc = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+                    ActivityCompat.requestPermissions(MainActivity.this, fineLoc, 0);
+                }
+
+
             }
         });
 
